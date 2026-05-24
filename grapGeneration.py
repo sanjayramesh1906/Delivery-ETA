@@ -1,97 +1,85 @@
 import pandas as pd
-import numpy as np
 import networkx as nx
+from pyvis.network import Network
+import webbrowser
 import os
 
-FILE_NAME = "delhivery_data.csv" 
+print("🎨 STEP 1: Reading your processed network data...")
 
-print(" Step 1: Reading your dataset into Python...")
-if not os.path.exists(FILE_NAME):
-    raise FileNotFoundError(f"Could not find '{FILE_NAME}'. Please upload it to Colab's file panel first!")
+# Load your files
+FILE_NAME = "delivery_data.csv"
+SCORECARD_NAME = "network_hubs_scorecard.csv"
 
-# Read CSV (Use pd.read_excel(FILE_NAME) if your file is an Excel sheet)
-df = pd.read_csv(FILE_NAME)
-print(f"Dataset successfully loaded! Total rows detected: {len(df):,}")
+if not os.path.exists(SCORECARD_NAME):
+    raise FileNotFoundError("Could not find 'network_hubs_scorecard.csv'. Please run your graphGeneration.py script first!")
 
-# Drop rows that are missing critical routing IDs
-df = df.dropna(subset=['source_center', 'destination_center', 'segment_factor'])
+df = pd.read_csv(FILE_NAME, usecols=['source_center', 'source_name', 'destination_center', 'destination_name', 'segment_factor'])
+hubs_scorecard = pd.read_csv(SCORECARD_NAME)
 
+# --- 2. MAP THE REAL LOCATION NAMES ---
+print("🏷️  STEP 2: Mapping ID codes to real city/facility names...")
+name_map_source = dict(zip(df['source_center'], df['source_name']))
+name_map_dest = dict(zip(df['destination_center'], df['destination_name']))
+hub_names = {**name_map_source, **name_map_dest}
 
-print("\n Step 2: Compressing 1Lakh+ rows into unique lanes...")
-# Since thousands of trucks travel the same roads, we group them to find the true baseline network map
+# --- 3. REBUILD THE CORE PATHWAYS ---
+print("🔄 STEP 3: Compressing routes for the visual canvas...")
 route_summary = df.groupby(['source_center', 'destination_center']).agg(
-    median_segment_factor=('segment_factor', 'median'),
-    total_trips_tracked=('segment_factor', 'count')
+    median_delay=('segment_factor', 'median')
 ).reset_index()
 
-print(f" Compression complete! Reduced heavy data into {len(route_summary):,} unique network lanes.")
+# Keep only the top active routes to prevent the visualizer from freezing your screen
+if len(route_summary) > 1000:
+    print("⚠️  Network is very dense. Filtering for prominent active connections to keep visual smooth...")
+    route_summary = route_summary.head(1000)
 
+# --- 4. INITIALIZE THE INTERACTIVE VISUAL LAYER ---
+# Setting up an enterprise-grade dark canvas layout
+net = Network(height="800px", width="100%", bgcolor="#1a1a1a", font_color="white", directed=True)
 
-print("\n Step 3: Constructing the Directed Network Graph...")
-# Initialize a Directed Graph (DiGraph) because traffic flows from a specific Source to a Destination
-G = nx.DiGraph()
-
-# Feed the compressed unique routes into NetworkX
-for _, row in route_summary.iterrows():
-    G.add_edge(
-        row['source_center'],
-        row['destination_center'],
-        weight=row['median_segment_factor'],  # Road weight = historical delay multiplier
-        trips=row['total_trips_tracked']      # Tracked lane volume
+# --- 5. PLOT THE HUBS (NODES) ---
+print("🔮 STEP 4: Adding color-coded infrastructure hubs...")
+for _, row in hubs_scorecard.iterrows():
+    hub_id = row['Hub_ID']
+    bridge_score = row['Chokepoint_Bridge_Score']
+    lanes_count = row['Incoming_Lanes_Count']
+    
+    # Get the user-friendly name, default to ID if missing
+    friendly_name = hub_names.get(hub_id, hub_id)
+    
+    # Color-coding system: Red is a severe bottleneck, Cyan is running smoothly
+    if bridge_score > 0.05:
+        node_color = "#FF3333"  # Severe Bottleneck (Red)
+        node_size = 35
+    elif bridge_score > 0.01:
+        node_color = "#FFA500"  # Moderate Risk (Orange)
+        node_size = 25
+    else:
+        node_color = "#00FFCC"  # Smooth running / Clear (Cyan)
+        node_size = 15
+        
+    net.add_node(
+        hub_id, 
+        label=str(friendly_name),  # Displays the human-readable facility name on the circle
+        title=f"ID: {hub_id}\nBridge Score: {bridge_score:.4f}\nLanes: {lanes_count}", # Tooltip on hover
+        color=node_color,
+        size=node_size
     )
 
-print(f"Network Map Complete! Total Infrastructure Hubs (Nodes): {G.number_of_nodes()} | Total Corridors (Edges): {G.number_of_edges()}")
+# --- 6. PLOT THE HIGHWAYS (EDGES) ---
+print("🛣️  STEP 5: Drawing connecting transit lanes...")
+for _, row in route_summary.iterrows():
+    source = row['source_center']
+    target = row['destination_center']
+    
+    # Only draw the connection if both nodes exist on our canvas map
+    if source in hubs_scorecard['Hub_ID'].values and target in hubs_scorecard['Hub_ID'].values:
+        net.add_edge(source, target, value=row['median_delay'], title=f"Delay Factor: {row['median_delay']:.2f}")
 
+# --- 7. SAVE AND FORCE LAUNCH POP-UP ---
+net.toggle_physics(True) # Adds smooth animated layout physics
+output_html = "delhivery_network_map.html"
+net.save_graph(output_html)
 
-# ==========================================
-print("\n Step 4: Running Graph Theory Math (This might take a few seconds)...")
-
-# Calculate Betweenness Centrality (Flags major geographical bridges/chokepoints)
-print("   ↳ Calculating Bridge Scores (Betweenness Centrality)...")
-betweenness = nx.betweenness_centrality(G, weight='weight')
-
-# Calculate In-Degree and Out-Degree (Counts unique connecting lanes per hub)
-in_degree = dict(G.in_degree())
-out_degree = dict(G.out_degree())
-
-# Create a clean, master scorecard table of your network hubs
-hubs_scorecard = pd.DataFrame({
-    'Hub_ID': list(betweenness.keys()),
-    'Chokepoint_Bridge_Score': list(betweenness.values()),
-    'Incoming_Lanes_Count': [in_degree[node] for node in betweenness.keys()],
-    'Outgoing_Lanes_Count': [out_degree[node] for node in betweenness.keys()]
-})
-
-# Save the scorecard table as a fresh CSV file for your team
-hubs_scorecard.to_csv("network_hubs_scorecard.csv", index=False)
-print("💾 Saved network metrics to 'network_hubs_scorecard.csv'")
-
-
-print("\n === TOP 15 CRITICAL BOTTLENECK HUBS DETECTED ===")
-top_15 = hubs_scorecard.sort_values(by='Chokepoint_Bridge_Score', ascending=False).head(15)
-print(top_15.to_string(index=False))
-print("==================================================\n")
-
-
-print(" Step 5: Injecting graph features back into the original 1Lakh+ dataset...")
-
-# Merge the source hub metrics into the main 100,000+ row dataset
-df = df.merge(hubs_scorecard[['Hub_ID', 'Chokepoint_Bridge_Score', 'Incoming_Lanes_Count']], 
-              left_on='source_center', right_on='Hub_ID', how='left')
-df.rename(columns={'Chokepoint_Bridge_Score': 'source_chokepoint_score', 
-                   'Incoming_Lanes_Count': 'source_incoming_lanes'}, inplace=True)
-df.drop(columns=['Hub_ID'], inplace=True)
-
-# Merge the destination hub metrics into the main 100,000+ row dataset
-df = df.merge(hubs_scorecard[['Hub_ID', 'Chokepoint_Bridge_Score', 'Incoming_Lanes_Count']], 
-              left_on='destination_center', right_on='Hub_ID', how='left')
-df.rename(columns={'Chokepoint_Bridge_Score': 'dest_chokepoint_score', 
-                   'Incoming_Lanes_Count': 'dest_incoming_lanes'}, inplace=True)
-df.drop(columns=['Hub_ID'], inplace=True)
-
-# Fill any structural gaps with 0 just in case
-df[['source_chokepoint_score', 'dest_chokepoint_score']] = df[['source_chokepoint_score', 'dest_chokepoint_score']].fillna(0)
-
-# Save the brand new, graph-enhanced dataset for the ML Engineer
-df.to_csv("graph_enhanced_ml_dataset.csv", index=False)
-print(" Success! Generated 'graph_enhanced_ml_dataset.csv' containing your 1Lakh+ rows appended with structural graph columns.")
+print("\n🎉 SUCCESS! Launching the interactive window on your computer screen...")
+webbrowser.open('file://' + os.path.realpath(output_html))
