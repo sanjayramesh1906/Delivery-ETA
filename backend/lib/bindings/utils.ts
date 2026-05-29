@@ -1,9 +1,59 @@
-function neighbourhoodHighlight(params) {
-  allNodes = nodes.get({ returnType: "Object" });
+// Define interfaces for Vis.js Network Data structures
+interface NodeData {
+  id: string | number;
+  color?: string | { background?: string; border?: string } | any;
+  hiddenLabel?: string;
+  label?: string;
+  hidden?: boolean;
+  savedLabel?: string;
+  [key: string]: any;
+}
+
+interface EdgeData {
+  id?: string | number;
+  from: string | number;
+  to: string | number;
+  [key: string]: any;
+}
+
+interface VisDataSet<T> {
+  get(options?: { returnType?: string }): { [key: string]: T } | T[];
+  update(data: T | T[]): void;
+}
+
+interface VisNetwork {
+  getConnectedNodes(nodeId: string | number): (string | number)[];
+  selectNodes(nodeIds: (string | number)[]): void;
+}
+
+interface SelectionParams {
+  nodes: (string | number)[];
+  [key: string]: any;
+}
+
+interface HighlightFilterCondition {
+  item: 'node' | 'edge' | string;
+  property: string;
+  value: string[];
+}
+
+// Global declarations to match the browser context of the HTML visualization
+declare let nodes: VisDataSet<NodeData>;
+declare let edges: VisDataSet<EdgeData>;
+declare let network: VisNetwork;
+declare let nodeColors: { [key: string]: any };
+declare let allNodes: { [key: string]: NodeData };
+declare let highlightActive: boolean;
+declare let filterActive: boolean;
+declare let allEdges: { [key: string]: EdgeData } | EdgeData[];
+
+// Typed functions
+function neighbourhoodHighlight(params: SelectionParams): void {
+  allNodes = nodes.get({ returnType: "Object" }) as { [key: string]: NodeData };
   
   if (params.nodes.length > 0) {
     highlightActive = true;
-    let i, j;
+    let i: number, j: number;
     const selectedNode = params.nodes[0];
     const degrees = 2;
 
@@ -16,7 +66,7 @@ function neighbourhoodHighlight(params) {
       }
     }
     const connectedNodes = network.getConnectedNodes(selectedNode);
-    let allConnectedNodes = [];
+    let allConnectedNodes: (string | number)[] = [];
 
     // get the second degree nodes
     for (i = 1; i < degrees; i++) {
@@ -73,7 +123,7 @@ function neighbourhoodHighlight(params) {
   }
 
   // transform the object into an array and update vis dataset
-  const updateArray = [];
+  const updateArray: NodeData[] = [];
   for (const nodeId in allNodes) {
     if (Object.prototype.hasOwnProperty.call(allNodes, nodeId)) {
       updateArray.push(allNodes[nodeId]);
@@ -82,8 +132,8 @@ function neighbourhoodHighlight(params) {
   nodes.update(updateArray);
 }
 
-function filterHighlight(params) {
-  allNodes = nodes.get({ returnType: "Object" });
+function filterHighlight(params: SelectionParams): void {
+  allNodes = nodes.get({ returnType: "Object" }) as { [key: string]: NodeData };
   
   if (params.nodes.length > 0) {
     filterActive = true;
@@ -122,7 +172,7 @@ function filterHighlight(params) {
   }
 
   // transform the object into an array and update vis dataset
-  const updateArray = [];
+  const updateArray: NodeData[] = [];
   for (const nodeId in allNodes) {
     if (Object.prototype.hasOwnProperty.call(allNodes, nodeId)) {
       updateArray.push(allNodes[nodeId]);
@@ -131,24 +181,24 @@ function filterHighlight(params) {
   nodes.update(updateArray);
 }
 
-function selectNode(nodeIds) {
+function selectNode(nodeIds: (string | number)[]): (string | number)[] {
   network.selectNodes(nodeIds);
   neighbourhoodHighlight({ nodes: nodeIds });
   return nodeIds;
 }
 
-function selectNodes(nodeIds) {
+function selectNodes(nodeIds: (string | number)[]): (string | number)[] {
   network.selectNodes(nodeIds);
   filterHighlight({ nodes: nodeIds });
   return nodeIds;
 }
 
-function highlightFilter(filter) {
-  const selectedNodes = [];
+function highlightFilter(filter: HighlightFilterCondition): void {
+  const selectedNodes: (string | number)[] = [];
   const selectedProp = filter['property'];
   
   if (filter['item'] === 'node') {
-    const localNodes = nodes.get({ returnType: "Object" });
+    const localNodes = nodes.get({ returnType: "Object" }) as { [key: string]: NodeData };
     for (const nodeId in localNodes) {
       if (
         localNodes[nodeId][selectedProp] && 
@@ -158,7 +208,7 @@ function highlightFilter(filter) {
       }
     }
   } else if (filter['item'] === 'edge') {
-    const localEdges = edges.get({ returnType: 'Object' });
+    const localEdges = edges.get({ returnType: 'Object' }) as any;
     for (const edgeId in localEdges) {
       if (
         localEdges[edgeId][selectedProp] && 

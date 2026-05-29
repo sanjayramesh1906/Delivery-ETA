@@ -1,0 +1,384 @@
+/* Import Google Fonts for Space Grotesk and Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Space+Grotesk:wght@400;500;600;700&display=swap');
+
+.traveloop-nav-container {
+  /* Design Tokens from User Specification */
+  --bg-color: #0B0F19;       /* Deep Charcoal */
+  --surface-color: #111827;  /* Charcoal */
+  --primary-color: #F97316;  /* Orange */
+  --secondary-color: #38BDF8;/* Sky Blue */
+  --success-color: #22C55E;  /* Green */
+  --text-color: #E5E7EB;     /* Off White */
+
+  --font-heading: 'Space Grotesk', sans-serif;
+  --font-body: 'Inter', sans-serif;
+
+  /* Stretch the background across 100% of the viewport width */
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+
+  background-color: var(--bg-color);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+  font-family: var(--font-body);
+  color: var(--text-color);
+  text-align: left;
+  box-shadow: 0 4px 30px rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(16px);
+  background-color: rgba(11, 15, 25, 0.94);
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  box-sizing: border-box;
+}
+
+.traveloop-nav-container *,
+.traveloop-nav-container *::before,
+.traveloop-nav-container *::after {
+  box-sizing: border-box;
+}
+
+.traveloop-nav-content {
+  max-width: 1440px;
+  width: 100%;
+  margin: 0 auto;
+  padding: 0 2rem; 
+  height: 64px; /* Slimmer elegant height */
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+/* Logo Section */
+.traveloop-logo-section {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  transition: transform 0.2s ease;
+  user-select: none;
+  margin-right: 1.5rem; /* Visual distance from navigation links */
+}
+
+.traveloop-logo-section:hover {
+  transform: scale(1.04);
+}
+
+.traveloop-logo-img {
+  height: 52px; /* Large prominent logo height */
+  width: auto;
+  border-radius: 6px;
+  object-fit: contain;
+  transition: transform 0.3s ease;
+}
+
+/* Navigation Links */
+.traveloop-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 0.2rem; /* Compact gap to fit 9 items in 1126px */
+}
+
+.traveloop-nav-link {
+  color: rgba(229, 231, 235, 0.65);
+  text-decoration: none;
+  font-size: 0.8rem; /* Compact font size */
+  font-weight: 500;
+  padding: 0.35rem 0.55rem; /* Tight horizontal/vertical padding */
+  border-radius: 20px;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  letter-spacing: 0.01em;
+  white-space: nowrap; /* Prevent any line wrapping */
+}
+
+.traveloop-nav-link:hover {
+  color: var(--text-color);
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+.traveloop-nav-link.active {
+  color: var(--primary-color);
+  background-color: rgba(249, 115, 22, 0.07);
+  font-weight: 600;
+}
+
+.traveloop-nav-link.active::after {
+  content: '';
+  position: absolute;
+  bottom: -4px; /* Tightly aligns active indicator right below the text */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 12px;
+  height: 3px;
+  background-color: var(--primary-color);
+  border-radius: 9999px;
+  box-shadow: 0 0 8px var(--primary-color);
+}
+
+/* Actions Section */
+.traveloop-actions-section {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem; /* Tighter gap */
+  margin-left: auto;
+}
+
+/* User Avatar & Dropdown */
+.traveloop-profile-wrapper {
+  position: relative;
+}
+
+.traveloop-profile-btn {
+  background: none;
+  border: 2px solid rgba(229, 231, 235, 0.12);
+  padding: 2px;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.25s ease;
+  position: relative;
+}
+
+.traveloop-profile-btn:hover {
+  border-color: var(--secondary-color);
+  transform: scale(1.03);
+}
+
+.traveloop-avatar {
+  width: 28px; /* Tighter size */
+  height: 28px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+
+.traveloop-online-dot {
+  position: absolute;
+  bottom: 0px;
+  right: 0px;
+  width: 8px;
+  height: 8px;
+  background-color: var(--success-color);
+  border: 1.5px solid var(--bg-color);
+  border-radius: 50%;
+  box-shadow: 0 0 6px var(--success-color);
+}
+
+/* Dropdown Menu */
+.traveloop-profile-dropdown {
+  position: absolute;
+  right: 0;
+  top: 44px;
+  background-color: var(--surface-color);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-radius: 10px;
+  width: 220px;
+  padding: 0.4rem;
+  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.5);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  animation: traveloop-dropdown-anim 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  z-index: 1010;
+}
+
+@keyframes traveloop-dropdown-anim {
+  from {
+    opacity: 0;
+    transform: translateY(-8px) scale(0.97);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.traveloop-dropdown-header {
+  padding: 0.6rem 0.75rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 0.3rem;
+}
+
+.traveloop-dropdown-name {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin-bottom: 0.15rem;
+}
+
+.traveloop-dropdown-email {
+  font-size: 0.75rem;
+  color: rgba(229, 231, 235, 0.4);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.traveloop-dropdown-item {
+  color: rgba(229, 231, 235, 0.8);
+  text-decoration: none;
+  font-size: 0.85rem;
+  padding: 0.55rem 0.75rem;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  cursor: pointer;
+  transition: all 0.15s ease;
+  border: none;
+  background: transparent;
+  width: 100%;
+  text-align: left;
+}
+
+.traveloop-dropdown-item:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+  color: var(--secondary-color);
+}
+
+.traveloop-dropdown-item svg {
+  width: 16px;
+  height: 16px;
+  opacity: 0.75;
+}
+
+.traveloop-dropdown-item.logout {
+  color: #F87171;
+  border-top: 1px solid rgba(255, 255, 255, 0.04);
+  margin-top: 0.2rem;
+}
+
+.traveloop-dropdown-item.logout:hover {
+  background-color: rgba(239, 68, 68, 0.08);
+  color: #F87171;
+}
+
+/* Mobile Hamburger Menu */
+.traveloop-hamburger {
+  display: none;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0.4rem;
+  color: var(--text-color);
+  border-radius: 6px;
+}
+
+.traveloop-hamburger svg {
+  width: 24px;
+  height: 24px;
+  display: block;
+}
+
+/* Responsive Breakpoint - Large Table/Tablet size */
+@media (max-width: 1180px) {
+  .traveloop-nav-content {
+    display: flex;
+    justify-content: space-between;
+  }
+  .traveloop-nav-links {
+    display: none;
+  }
+  .traveloop-actions-section {
+    display: none;
+  }
+  .traveloop-hamburger {
+    display: block;
+  }
+}
+
+/* Mobile Slide-down Drawer */
+.traveloop-mobile-menu {
+  display: none;
+}
+
+@media (max-width: 1180px) {
+  .traveloop-mobile-menu.open {
+    display: flex;
+    flex-direction: column;
+    background-color: var(--surface-color);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    padding: 1rem 1.5rem 1.5rem 1.5rem;
+    gap: 0.4rem;
+    animation: traveloop-slide-down 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.4);
+  }
+}
+
+@keyframes traveloop-slide-down {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.traveloop-mobile-nav-link {
+  color: rgba(229, 231, 235, 0.8);
+  text-decoration: none;
+  font-size: 0.95rem;
+  font-weight: 500;
+  padding: 0.65rem 0.85rem;
+  border-radius: 6px;
+  transition: all 0.15s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+}
+
+.traveloop-mobile-nav-link:hover {
+  background-color: rgba(255, 255, 255, 0.04);
+  color: var(--secondary-color);
+}
+
+.traveloop-mobile-nav-link.active {
+  color: var(--primary-color);
+  background-color: rgba(249, 115, 22, 0.07);
+  font-weight: 600;
+}
+
+.traveloop-mobile-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+  margin-top: 0.6rem;
+  padding-top: 0.6rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.traveloop-mobile-profile {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
+  padding: 0.4rem 0.85rem;
+}
+
+.traveloop-mobile-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 1.5px solid rgba(229, 231, 235, 0.1);
+}
+
+.traveloop-mobile-userinfo {
+  display: flex;
+  flex-direction: column;
+}
+
+.traveloop-mobile-name {
+  font-family: var(--font-heading);
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.traveloop-mobile-email {
+  font-size: 0.75rem;
+  color: rgba(229, 231, 235, 0.4);
+}
