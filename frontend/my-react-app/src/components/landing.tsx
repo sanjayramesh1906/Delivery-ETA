@@ -32,9 +32,10 @@ const CompassIcon = () => (
 
 interface LandingPageProps {
   onSignInClick: () => void;
+  onRegisterClick: () => void;
 }
 
-export const LandingPage: React.FC<LandingPageProps> = ({ onSignInClick }) => {
+export const LandingPage: React.FC<LandingPageProps> = ({ onSignInClick, onRegisterClick }) => {
   const features = [
     {
       icon: <MapIcon />,
@@ -64,12 +65,24 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignInClick }) => {
       <header className="traveloop-landing-header">
         <div className="traveloop-landing-logo-section">
           <img src="/logo.png" alt="Delhivery Logo" className="traveloop-landing-logo" onError={(e) => {
-            (e.target as HTMLImageElement).src = 'https://img.icons8.com/color/96/airport.png';
+            const target = e.currentTarget as HTMLImageElement;
+            target.onerror = null;
+            target.src = 'https://img.icons8.com/color/96/airport.png';
           }} />
         </div>
-        <button type="button" className="traveloop-landing-signin-btn" onClick={onSignInClick}>
-          Sign In
-        </button>
+        <div style={{ display: 'flex', gap: '10px' }}>
+          <button 
+            type="button" 
+            className="traveloop-landing-signin-btn" 
+            onClick={onSignInClick}
+            style={{ backgroundColor: 'transparent', border: '1px solid rgba(255, 255, 255, 0.08)', color: 'var(--text-color)' }}
+          >
+            Sign In
+          </button>
+          <button type="button" className="traveloop-landing-signin-btn" onClick={onRegisterClick}>
+            Register
+          </button>
+        </div>
       </header>
 
       {/* Hero Section */}
@@ -83,8 +96,8 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignInClick }) => {
             Empower your dispatch operations with dynamic corridor mapping, predictive bottleneck analysis, and machine-learning transit scores engineered for high-velocity supply chain networks.
           </p>
           <div className="traveloop-hero-actions">
-            <button type="button" className="traveloop-hero-btn primary" onClick={onSignInClick}>
-              Explore Platform
+            <button type="button" className="traveloop-hero-btn primary" onClick={onRegisterClick}>
+              Register Now
               <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round">
                 <line x1="5" x2="19" y1="12" y2="12" />
                 <polyline points="12 5 19 12 12 19" />
@@ -158,7 +171,9 @@ export const LandingPage: React.FC<LandingPageProps> = ({ onSignInClick }) => {
       <footer className="traveloop-landing-footer">
         <div className="traveloop-footer-logo-line">
           <img src="/logo.png" alt="Delhivery Logo" className="traveloop-footer-logo" onError={(e) => {
-            (e.target as HTMLImageElement).src = 'https://img.icons8.com/color/96/airport.png';
+            const target = e.currentTarget as HTMLImageElement;
+            target.onerror = null;
+            target.src = 'https://img.icons8.com/color/96/airport.png';
           }} />
         </div>
         <p className="traveloop-footer-copyright">

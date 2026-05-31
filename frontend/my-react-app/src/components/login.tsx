@@ -4,9 +4,10 @@ import './login.css';
 interface LoginProps {
   onLoginSuccess: (name: string, email: string) => void;
   onBackToHome?: () => void;
+  onRegisterClick?: () => void;
 }
 
-export const LoginPage: React.FC<LoginProps> = ({ onLoginSuccess, onBackToHome }) => {
+export const LoginPage: React.FC<LoginProps> = ({ onLoginSuccess, onBackToHome, onRegisterClick }) => {
   const [isSignup, setIsSignup] = useState(false);
   const [showPassword, setShowPassword] = useState(false);
   
@@ -92,7 +93,9 @@ export const LoginPage: React.FC<LoginProps> = ({ onLoginSuccess, onBackToHome }
         <div className="traveloop-auth-header">
           <div className="traveloop-auth-logo-box">
             <img src="/logo.png" alt="Delhivery Logo" className="traveloop-auth-logo" onError={(e) => {
-              (e.target as HTMLImageElement).src = 'https://img.icons8.com/color/96/airport.png';
+              const target = e.currentTarget as HTMLImageElement;
+              target.onerror = null;
+              target.src = 'https://img.icons8.com/color/96/airport.png';
             }} />
           </div>
           <h2 className="traveloop-auth-title">
@@ -226,8 +229,12 @@ export const LoginPage: React.FC<LoginProps> = ({ onLoginSuccess, onBackToHome }
             type="button"
             className="traveloop-toggle-auth-mode"
             onClick={() => {
-              setIsSignup(!isSignup);
-              setErrors({});
+              if (onRegisterClick) {
+                onRegisterClick();
+              } else {
+                setIsSignup(!isSignup);
+                setErrors({});
+              }
             }}
             disabled={isSubmitting}
           >

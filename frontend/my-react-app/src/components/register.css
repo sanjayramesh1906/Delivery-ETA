@@ -1,0 +1,380 @@
+.traveloop-auth-container {
+  --bg-color: #0B0F19;       /* Deep Charcoal */
+  --surface-color: #111827;  /* Charcoal */
+  --card-bg: rgba(17, 24, 39, 0.85); /* Glass surface */
+  --primary-color: #F97316;  /* Orange */
+  --primary-glow: rgba(249, 115, 22, 0.15);
+  --primary-border: rgba(249, 115, 22, 0.4);
+  --secondary-color: #38BDF8;/* Sky Blue */
+  --text-color: #E5E7EB;     /* Off White */
+  --text-muted: rgba(229, 231, 235, 0.5);
+  --error-color: #EF4444;    /* Crimson Red */
+  --input-bg: rgba(255, 255, 255, 0.03);
+  --input-border: rgba(255, 255, 255, 0.08);
+
+  min-height: 100vh;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: var(--bg-color);
+  background-image: 
+    radial-gradient(at 0% 0%, rgba(249, 115, 22, 0.08) 0px, transparent 50%),
+    radial-gradient(at 100% 100%, rgba(56, 189, 248, 0.05) 0px, transparent 50%);
+  font-family: 'Inter', sans-serif;
+  color: var(--text-color);
+  padding: 1.5rem;
+  box-sizing: border-box;
+}
+
+.traveloop-auth-container *,
+.traveloop-auth-container *::before,
+.traveloop-auth-container *::after {
+  box-sizing: border-box;
+}
+
+.traveloop-auth-card {
+  width: 100%;
+  max-width: 440px;
+  background-color: var(--card-bg);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 1px solid var(--input-border);
+  border-radius: 16px;
+  padding: 2.5rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.6);
+  animation: traveloop-auth-fade-in 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes traveloop-auth-fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.traveloop-auth-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
+
+.traveloop-auth-logo-box {
+  display: inline-flex;
+  padding: 8px;
+  border-radius: 12px;
+  background-color: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  margin-bottom: 1.2rem;
+}
+
+.traveloop-auth-logo {
+  height: 48px;
+  width: auto;
+  object-fit: contain;
+}
+
+.traveloop-auth-title {
+  font-family: 'Space Grotesk', sans-serif;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: var(--text-color);
+  margin: 0 0 0.5rem 0;
+  letter-spacing: -0.02em;
+}
+
+.traveloop-auth-subtitle {
+  font-size: 0.85rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  margin: 0;
+}
+
+.traveloop-auth-form {
+  display: flex;
+  flex-direction: column;
+  gap: 1.25rem;
+}
+
+.traveloop-form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  text-align: left;
+}
+
+.traveloop-form-label {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--text-color);
+  letter-spacing: 0.01em;
+}
+
+.traveloop-toggle-auth-mode {
+  background: none;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--secondary-color);
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease;
+}
+
+.traveloop-toggle-auth-mode:hover {
+  color: var(--text-color);
+  text-decoration: underline;
+}
+
+.traveloop-input-wrapper {
+  position: relative;
+  display: flex;
+  align-items: center;
+}
+
+.traveloop-input-icon {
+  position: absolute;
+  left: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+  transition: color 0.2s ease;
+}
+
+.traveloop-auth-input {
+  width: 100%;
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  padding: 10px 12px 10px 38px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-color);
+  transition: all 0.2s ease;
+}
+
+.traveloop-auth-input::placeholder {
+  color: rgba(229, 231, 235, 0.25);
+}
+
+.traveloop-auth-input:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.traveloop-auth-input.error {
+  border-color: var(--error-color);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.traveloop-auth-input:focus + .traveloop-input-icon {
+  color: var(--primary-color);
+}
+
+.traveloop-password-toggle {
+  position: absolute;
+  right: 12px;
+  background: none;
+  border: none;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: color 0.15s ease;
+}
+
+.traveloop-password-toggle:hover {
+  color: var(--text-color);
+}
+
+.traveloop-form-error {
+  font-size: 0.75rem;
+  color: var(--error-color);
+  margin-top: 0.15rem;
+}
+
+/* Custom Select Styling */
+.traveloop-auth-select {
+  width: 100%;
+  background-color: var(--input-bg);
+  border: 1px solid var(--input-border);
+  border-radius: 8px;
+  padding: 10px 30px 10px 38px;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  color: var(--text-color);
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.traveloop-auth-select:focus {
+  outline: none;
+  border-color: var(--primary-color);
+  background-color: rgba(255, 255, 255, 0.05);
+  box-shadow: 0 0 0 3px var(--primary-glow);
+}
+
+.traveloop-auth-select.error {
+  border-color: var(--error-color);
+  box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+}
+
+.traveloop-select-arrow {
+  position: absolute;
+  right: 12px;
+  color: var(--text-muted);
+  pointer-events: none;
+}
+
+/* Custom Checkbox Styling */
+.traveloop-checkbox-group {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 0.25rem;
+}
+
+.traveloop-checkbox-input {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 16px;
+  height: 16px;
+  border: 1px solid var(--input-border);
+  border-radius: 4px;
+  background-color: var(--input-bg);
+  cursor: pointer;
+  position: relative;
+  margin-top: 2px;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+
+.traveloop-checkbox-input:checked {
+  background-color: var(--primary-color);
+  border-color: var(--primary-color);
+}
+
+.traveloop-checkbox-input:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1.5px;
+  width: 5px;
+  height: 9px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.traveloop-checkbox-input.error {
+  border-color: var(--error-color);
+}
+
+.traveloop-checkbox-label {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  line-height: 1.4;
+  text-align: left;
+  cursor: pointer;
+  user-select: none;
+}
+
+.traveloop-checkbox-label a {
+  color: var(--secondary-color);
+  text-decoration: none;
+}
+
+.traveloop-checkbox-label a:hover {
+  text-decoration: underline;
+}
+
+.traveloop-auth-btn {
+  background-color: var(--primary-color);
+  border: 1px solid var(--primary-border);
+  color: #FFFFFF;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.9rem;
+  font-weight: 600;
+  padding: 11px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 0.5rem;
+  box-shadow: 0 4px 12px var(--primary-glow);
+}
+
+.traveloop-auth-btn:hover:not(:disabled) {
+  background-color: #EA580C;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 16px rgba(249, 115, 22, 0.25);
+}
+
+.traveloop-auth-btn:active:not(:disabled) {
+  transform: translateY(0);
+}
+
+.traveloop-auth-btn:disabled {
+  opacity: 0.7;
+  cursor: not-allowed;
+}
+
+.traveloop-btn-spinner {
+  width: 18px;
+  height: 18px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #FFFFFF;
+  border-radius: 50%;
+  animation: traveloop-spinner-anim 0.6s linear infinite;
+}
+
+@keyframes traveloop-spinner-anim {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.traveloop-auth-footer {
+  text-align: center;
+  margin-top: 1.5rem;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.traveloop-back-home-btn {
+  background: none;
+  border: none;
+  font-family: 'Inter', sans-serif;
+  font-size: 0.8rem;
+  font-weight: 500;
+  color: var(--text-muted);
+  cursor: pointer;
+  padding: 0;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-bottom: 1.5rem;
+  transition: color 0.15s ease;
+}
+
+.traveloop-back-home-btn:hover {
+  color: var(--text-color);
+}
+
+@media (max-width: 480px) {
+  .traveloop-auth-card {
+    padding: 1.75rem;
+  }
+}

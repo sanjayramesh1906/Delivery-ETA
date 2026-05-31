@@ -202,7 +202,9 @@ export const Navbar: React.FC<NavbarProps> = ({
             alt="Delhivery Logo"
             className="traveloop-logo-img"
             onError={(e: React.SyntheticEvent<HTMLImageElement, Event>): void => {
-              (e.target as HTMLImageElement).src =
+              const target = e.currentTarget as HTMLImageElement;
+              target.onerror = null;
+              target.src =
                 'https://img.icons8.com/color/96/airport.png';
             }}
           />
