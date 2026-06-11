@@ -1,5 +1,5 @@
 import React from 'react';
-import './landing.css';
+import ".\landing.css";
 
 // SVG Icons for Feature Cards
 const MapIcon = () => (
