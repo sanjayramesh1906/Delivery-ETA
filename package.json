@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "npm run build --prefix frontend/my-react-app"
+    "build": "npm install --prefix frontend/my-react-app && npm run build --prefix frontend/my-react-app"
   }
 }
