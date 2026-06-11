@@ -7,7 +7,6 @@ import { Dashboard } from './components/dashboard'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
   const [activeTab, setActiveTab] = useState('network-graph')
   const [currentScreen, setCurrentScreen] = useState<'landing' | 'login' | 'register' | 'dashboard'>('landing')
   const [user, setUser] = useState({ name: '', email: '' })
