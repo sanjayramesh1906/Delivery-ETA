@@ -3,6 +3,6 @@
   "version": "1.0.0",
   "private": true,
   "scripts": {
-    "build": "npm run build --prefix frontend/my-react-app && cp -r frontend/my-react-app/dist/* ./"
+    "build": "npm run build --prefix frontend/my-react-app"
   }
 }
