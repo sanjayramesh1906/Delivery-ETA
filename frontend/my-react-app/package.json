@@ -4,10 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "predev": "node prepare-maps.js",
-    "prebuild": "node prepare-maps.js",
-    "dev": "vite",
-    "build": "vite build",
+    "dev": "node copy-assets.js && vite",
+    "build": "node copy-assets.js && tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },

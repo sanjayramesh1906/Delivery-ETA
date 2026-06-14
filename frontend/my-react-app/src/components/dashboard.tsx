@@ -526,7 +526,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ activeTab, onTabChange, us
                 <div className="form-group">
                   <label>Origin Logistics Hub</label>
                   <select value={etaOrigin} onChange={(e) => setEtaOrigin(e.target.value)}>
-                    {hubs.map(h => (
+                    {hubs.filter(h => h.incomingLanes > 0 || h.outgoingLanes > 0 || h.bridgeScore > 0).map(h => (
                       <option key={h.id} value={h.id}>{h.name}</option>
                     ))}
                   </select>
@@ -535,7 +535,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ activeTab, onTabChange, us
                 <div className="form-group">
                   <label>Destination Hub</label>
                   <select value={etaDest} onChange={(e) => setEtaDest(e.target.value)}>
-                    {hubs.map(h => (
+                    {hubs.filter(h => h.incomingLanes > 0 || h.outgoingLanes > 0 || h.bridgeScore > 0).map(h => (
                       <option key={h.id} value={h.id}>{h.name}</option>
                     ))}
                   </select>
@@ -819,7 +819,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ activeTab, onTabChange, us
               <div className="hub-selector">
                 <label>Select Logistics Hub: </label>
                 <select value={selectedHubId} onChange={(e) => setSelectedHubId(e.target.value)}>
-                  {hubs.map(h => (
+                  {hubs.filter(h => h.incomingLanes > 0 || h.outgoingLanes > 0 || h.bridgeScore > 0).map(h => (
                     <option key={h.id} value={h.id}>{h.name}</option>
                   ))}
                 </select>

@@ -38,26 +38,18 @@ export interface ModeRecommendation {
 
 const BACKEND_URL = 'http://localhost:8000/api';
 
-// Live Hub Dataset from network_hubs_scorecard.csv & delivery_data.csv (Core Sample)
-export const HUBS_DATA: HubScore[] = [
-  { id: 'IND000000ACB', name: 'Bengaluru Hub (ACB)', bridgeScore: 0.238, incomingLanes: 45, outgoingLanes: 49, dwellTimeMin: 185, status: 'Critical' },
-  { id: 'IND562132AAA', name: 'Mumbai Linehaul Hub (562)', bridgeScore: 0.136, incomingLanes: 36, outgoingLanes: 35, dwellTimeMin: 142, status: 'Critical' },
-  { id: 'IND501359AAE', name: 'Hyderabad Central (501)', bridgeScore: 0.083, incomingLanes: 30, outgoingLanes: 27, dwellTimeMin: 98, status: 'Critical' },
-  { id: 'IND712311AAA', name: 'Kolkata Gateway (712)', bridgeScore: 0.080, incomingLanes: 24, outgoingLanes: 22, dwellTimeMin: 110, status: 'Critical' },
-  { id: 'IND160002AAC', name: 'Chandigarh Dispatch (160)', bridgeScore: 0.053, incomingLanes: 32, outgoingLanes: 29, dwellTimeMin: 85, status: 'Moderate' },
-  { id: 'IND411033AAA', name: 'Pune Fulfillment (411)', bridgeScore: 0.052, incomingLanes: 23, outgoingLanes: 20, dwellTimeMin: 74, status: 'Moderate' },
-  { id: 'IND131028AAB', name: 'Sonipat Linehaul (131)', bridgeScore: 0.049, incomingLanes: 20, outgoingLanes: 20, dwellTimeMin: 68, status: 'Moderate' },
-  { id: 'IND209304AAA', name: 'Kanpur Center (209)', bridgeScore: 0.043, incomingLanes: 16, outgoingLanes: 13, dwellTimeMin: 62, status: 'Moderate' },
-  { id: 'IND302014AAA', name: 'Jaipur Sorting (302)', bridgeScore: 0.042, incomingLanes: 10, outgoingLanes: 8, dwellTimeMin: 55, status: 'Moderate' },
-  { id: 'IND382430AAB', name: 'Ahmedabad Hub (382)', bridgeScore: 0.030, incomingLanes: 17, outgoingLanes: 13, dwellTimeMin: 48, status: 'Moderate' },
-  { id: 'IND462022AAA', name: 'Bhopal Distribution (462)', bridgeScore: 0.028, incomingLanes: 13, outgoingLanes: 9, dwellTimeMin: 42, status: 'Moderate' },
-  { id: 'IND751002AAB', name: 'Bhubaneswar Delivery (751)', bridgeScore: 0.016, incomingLanes: 13, outgoingLanes: 6, dwellTimeMin: 35, status: 'Smooth' },
-  { id: 'IND000000ACA', name: 'Chennai Hub (ACA)', bridgeScore: 0.012, incomingLanes: 13, outgoingLanes: 9, dwellTimeMin: 38, status: 'Smooth' },
-  { id: 'IND521225AAB', name: 'Vijayawada Center (521)', bridgeScore: 0.011, incomingLanes: 8, outgoingLanes: 8, dwellTimeMin: 28, status: 'Smooth' },
-  { id: 'IND474003AAA', name: 'Gwalior Gateway (474)', bridgeScore: 0.008, incomingLanes: 8, outgoingLanes: 6, dwellTimeMin: 25, status: 'Smooth' },
-  { id: 'IND248001AAA', name: 'Dehradun Delivery (248)', bridgeScore: 0.0016, incomingLanes: 3, outgoingLanes: 1, dwellTimeMin: 18, status: 'Smooth' },
-  { id: 'IND125001AAA', name: 'Hisar Sorting (125)', bridgeScore: 0.006, incomingLanes: 7, outgoingLanes: 8, dwellTimeMin: 22, status: 'Smooth' }
-];
+import ALL_HUBS_MAPPING from './hub_mappings.json';
+
+// Live Hub Dataset from network_hubs_scorecard.csv & delivery_data.csv (Complete 1,657 Mappings)
+export const HUBS_DATA: HubScore[] = ALL_HUBS_MAPPING.map((h: any) => ({
+  id: h.id,
+  name: h.name === 'nan' ? `Facility ${h.id}` : h.name,
+  bridgeScore: h.centrality,
+  incomingLanes: h.inLanes,
+  outgoingLanes: h.outLanes,
+  dwellTimeMin: h.dwellTimeMin,
+  status: h.status
+}));
 
 export const CORRIDORS_DATA: CorridorData[] = [
   { sourceId: 'IND000000ACB', sourceName: 'Bengaluru Hub', destId: 'IND562132AAA', destName: 'Mumbai Linehaul Hub', distance: 980, medianDelayFactor: 1.45, activeTrips: 84, routeType: 'FTL' },
