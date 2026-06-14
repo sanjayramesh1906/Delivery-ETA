@@ -123,7 +123,6 @@ export const apiService = {
     const destRisk = destHub ? destHub.bridgeScore : 0.01;
     
     // Feature Engineering matches ETA_model_training.py:
-    const speed = inputs.osrmDistance / (inputs.osrmTimeMin / 60.0 + 0.1);
     const distRatio = inputs.actualDistance / (inputs.osrmDistance + 0.1);
     
     // Core prediction logic incorporating congestion coefficients:

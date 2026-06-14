@@ -1,60 +1,20 @@
 import { useState } from 'react'
 import Navbar from './components/navbar'
-import LoginPage from './components/login'
-import LandingPage from './components/landing'
-import RegisterPage from './components/register'
 import { Dashboard } from './components/dashboard'
 import './App.css'
 
 function App() {
-  const [count, setCount] = useState(0)
   const [activeTab, setActiveTab] = useState('network-graph')
-  const [currentScreen, setCurrentScreen] = useState<'landing' | 'login' | 'register' | 'dashboard'>('landing')
-  const [user, setUser] = useState({ name: '', email: '' })
-
-  const handleLoginSuccess = (name: string, email: string) => {
-    setUser({ name, email });
-    setCurrentScreen('dashboard');
-  };
+  const [user] = useState({ name: 'Operator Admin', email: 'operator@delhivery-eta.in' })
 
   const handleTabChange = (tabId: string) => {
     if (tabId === 'logout') {
-      setUser({ name: '', email: '' });
-      setCurrentScreen('landing');
+      alert('Session reset. Re-initializing simulation database...');
       setActiveTab('network-graph');
     } else {
       setActiveTab(tabId);
     }
   };
-
-  if (currentScreen === 'landing') {
-    return (
-      <LandingPage 
-        onSignInClick={() => setCurrentScreen('login')} 
-        onRegisterClick={() => setCurrentScreen('register')} 
-      />
-    );
-  }
-
-  if (currentScreen === 'login') {
-    return (
-      <LoginPage 
-        onLoginSuccess={handleLoginSuccess} 
-        onBackToHome={() => setCurrentScreen('landing')} 
-        onRegisterClick={() => setCurrentScreen('register')}
-      />
-    );
-  }
-
-  if (currentScreen === 'register') {
-    return (
-      <RegisterPage 
-        onRegisterSuccess={handleLoginSuccess} 
-        onBackToHome={() => setCurrentScreen('landing')} 
-        onBackToLogin={() => setCurrentScreen('login')}
-      />
-    );
-  }
 
   return (
     <>

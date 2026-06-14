@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { apiService, HUBS_DATA, CORRIDORS_DATA } from '../services/api';
 import type { HubScore, CorridorData, PredictionResult, ModeRecommendation } from '../services/api';
 import './dashboard.css';
+import ALL_HUBS_MAPPING from '../services/hub_mappings.json';
 
 interface DashboardProps {
   activeTab: string;
@@ -49,6 +50,13 @@ export const Dashboard: React.FC<DashboardProps> = ({ activeTab, onTabChange, us
 
   // Alerts Logs State
   const [alertsLog, setAlertsLog] = useState<any[]>([]);
+
+  // Network Mapping Directory States
+  const [mappingSearchQuery, setMappingSearchQuery] = useState<string>('');
+  const [mappingRoleFilter, setMappingRoleFilter] = useState<string>('All');
+  const [mappingStatusFilter, setMappingStatusFilter] = useState<string>('All');
+  const [mappingPage, setMappingPage] = useState<number>(1);
+  const itemsPerPage = 15;
 
   // Simulation Recalculator
   const runSimulation = () => {
@@ -149,6 +157,20 @@ export const Dashboard: React.FC<DashboardProps> = ({ activeTab, onTabChange, us
     triggerModeRecommendation();
   }, [recDistance, recWeight, recSla, recCorridorRisk]);
 
+  // Filter and paginate Delhivery ID Mapping Directory
+  const filteredMappings = ALL_HUBS_MAPPING.filter(h => {
+    const matchesSearch = h.id.toLowerCase().includes(mappingSearchQuery.toLowerCase()) || 
+                          h.name.toLowerCase().includes(mappingSearchQuery.toLowerCase()) ||
+                          h.state.toLowerCase().includes(mappingSearchQuery.toLowerCase());
+    const matchesRole = mappingRoleFilter === 'All' || h.role === mappingRoleFilter;
+    const matchesStatus = mappingStatusFilter === 'All' || h.status === mappingStatusFilter;
+    return matchesSearch && matchesRole && matchesStatus;
+  });
+
+  const totalPages = Math.ceil(filteredMappings.length / itemsPerPage);
+  const startIndex = (mappingPage - 1) * itemsPerPage;
+  const paginatedMappings = filteredMappings.slice(startIndex, startIndex + itemsPerPage);
+
   const selectedHub = hubs.find(h => h.id === selectedHubId) || hubs[0];
   const selectedHubInflow = corridors.filter(c => c.destId === selectedHubId);
   const selectedHubOutflow = corridors.filter(c => c.sourceId === selectedHubId);
@@ -159,7 +181,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ activeTab, onTabChange, us
       <div className="sim-info-bar">
         <div className="sim-status">
           <span className="pulse-indicator"></span>
-          <span>Simulation Engine Active</span>
+          <span>Simulation Engine Active ({user?.name || 'Operator'})</span>
           <span className="divider">|</span>
           <span className="metric">Peak Traffic Multiplier: <strong>{peakTrafficMultiplier}x</strong></span>
           <span className="divider">|</span>
@@ -230,6 +252,178 @@ export const Dashboard: React.FC<DashboardProps> = ({ activeTab, onTabChange, us
                 <div className="legend-item"><span className="legend-color clear"></span> Clear Hub (Bridge Score &lt; 0.01)</div>
               </div>
             </div>
+          </div>
+        )}
+
+        {/* TAB: NETWORK ID MAPPING */}
+        {activeTab === 'network-mapping' && (
+          <div className="tab-pane network-mapping-pane">
+            <div className="pane-header">
+              <div>
+                <h2>Logistics Facility ID Directory (ID Mapping)</h2>
+                <p className="pane-desc">Explore the complete structured dictionary mapping system facility IDs to real cities, regions, and network roles.</p>
+              </div>
+            </div>
+
+            {/* Structured Guide / Glossary cards */}
+            <div className="mapping-guide-grid">
+              <div className="guide-card card-glass">
+                <div className="guide-icon">🔍</div>
+                <h3>Understanding System IDs</h3>
+                <p>
+                  Every location in Delhivery's logistics graph is designated a unique code like <strong>IND562132AAA</strong>. 
+                  The first 3 letters <code>IND</code> represent the country. 
+                  The 6 numbers (e.g., <code>562132</code>) map to the local regional pin code. 
+                  The final 3 letters (e.g., <code>AAA</code>) represent the classification code.
+                </p>
+              </div>
+
+              <div className="guide-card card-glass">
+                <div className="guide-icon">📊</div>
+                <h3>Chokepoint Centrality</h3>
+                <p>
+                  Betweenness Centrality (Chokepoint Score) measures how critical a facility is. 
+                  A score of <code>0.238</code> indicates that <strong>23.8%</strong> of all optimal routes across the country pass through this hub. 
+                  A high score indicates a critical network gateway where dwells can cause massive cascading delays.
+                </p>
+              </div>
+
+              <div className="guide-card card-glass">
+                <div className="guide-icon">🏢</div>
+                <h3>Facility Roles Explained</h3>
+                <p>
+                  <strong>Linehaul Hubs:</strong> Major transit points routing bulk cargo between cities. <br />
+                  <strong>Sorting Centers:</strong> Process and route shipments according to delivery hubs. <br />
+                  <strong>Last-Mile Delivery:</strong> Final hubs dispatching delivery vans directly to customers.
+                </p>
+              </div>
+            </div>
+
+            {/* Quick Metrics Bar */}
+            <div className="mini-kpi-grid">
+              <div className="mini-card">
+                <div className="label">Total Mapped Nodes</div>
+                <div className="value">{ALL_HUBS_MAPPING.length}</div>
+              </div>
+              <div className="mini-card warning">
+                <div className="label">High Centrality Chokepoints</div>
+                <div className="value">{ALL_HUBS_MAPPING.filter(h => h.centrality > 0.04).length}</div>
+              </div>
+              <div className="mini-card info">
+                <div className="label">States/Territories</div>
+                <div className="value">{Array.from(new Set(ALL_HUBS_MAPPING.map(h => h.state))).filter(s => s !== "Unknown").length}</div>
+              </div>
+              <div className="mini-card">
+                <div className="label">Linehaul Hubs</div>
+                <div className="value">{ALL_HUBS_MAPPING.filter(h => h.role === "Linehaul Hub").length}</div>
+              </div>
+            </div>
+
+            <div className="table-filter-bar">
+              <input 
+                type="text" 
+                placeholder="Search by ID, Name or State..." 
+                className="search-input"
+                value={mappingSearchQuery}
+                onChange={(e) => { setMappingSearchQuery(e.target.value); setMappingPage(1); }}
+              />
+              
+              <select 
+                className="filter-select"
+                value={mappingRoleFilter}
+                onChange={(e) => { setMappingRoleFilter(e.target.value); setMappingPage(1); }}
+              >
+                <option value="All">All Hub Roles</option>
+                <option value="Linehaul Hub">Linehaul Hubs</option>
+                <option value="Network Gateway">Network Gateways</option>
+                <option value="Sorting Center">Sorting Centers</option>
+                <option value="Dispatch Center">Dispatch Centers</option>
+                <option value="Fulfillment Center">Fulfillment Centers</option>
+                <option value="Last-Mile Delivery Hub">Last-Mile Delivery Hubs</option>
+                <option value="Logistics Facility">Other Facilities</option>
+              </select>
+
+              <select 
+                className="filter-select"
+                value={mappingStatusFilter}
+                onChange={(e) => { setMappingStatusFilter(e.target.value); setMappingPage(1); }}
+              >
+                <option value="All">All Severity Levels</option>
+                <option value="Critical">Critical Risk (Centrality &gt; 0.05)</option>
+                <option value="Moderate">Moderate Risk (0.01 - 0.05)</option>
+                <option value="Smooth">Smooth running (&lt; 0.01)</option>
+              </select>
+            </div>
+
+            <div className="table-responsive">
+              <table className="scorecard-table">
+                <thead>
+                  <tr>
+                    <th>Hub ID</th>
+                    <th>Facility Name</th>
+                    <th>State</th>
+                    <th>Network Role</th>
+                    <th>Centrality Score</th>
+                    <th>Lanes Count (In/Out)</th>
+                    <th>Avg Dwell Time</th>
+                    <th>Risk Status</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {paginatedMappings.map((h) => (
+                    <tr key={h.id} className={h.status === 'Critical' ? 'severe-row' : ''}>
+                      <td><code>{h.id}</code></td>
+                      <td><strong>{h.name}</strong></td>
+                      <td><span className="state-badge">{h.state}</span></td>
+                      <td><span className={`role-badge ${h.role.toLowerCase().replace(/ /g, '-')}`}>{h.role}</span></td>
+                      <td>
+                        <div className="centrality-cell">
+                          <span>{h.centrality.toFixed(5)}</span>
+                          <div className="progress-bar-container">
+                            <div className="progress-bar" style={{ width: `${Math.min(100, h.centrality * 400)}%`, backgroundColor: h.status === 'Critical' ? '#EF4444' : h.status === 'Moderate' ? '#F59E0B' : '#10B981' }}></div>
+                          </div>
+                        </div>
+                      </td>
+                      <td>{h.inLanes} In / {h.outLanes} Out</td>
+                      <td><strong>{h.dwellTimeMin} mins</strong></td>
+                      <td>
+                        <span className={`badge ${h.status.toLowerCase()}`}>{h.status}</span>
+                      </td>
+                    </tr>
+                  ))}
+                  {filteredMappings.length === 0 && (
+                    <tr>
+                      <td colSpan={8} style={{ textAlign: 'center', padding: '30px', color: '#9ca3af' }}>
+                        No facility mappings found matching search filters.
+                      </td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="pagination-bar">
+                <button 
+                  disabled={mappingPage === 1} 
+                  onClick={() => setMappingPage(p => Math.max(1, p - 1))}
+                  className="page-btn"
+                >
+                  Previous
+                </button>
+                <span className="page-info">
+                  Page <strong>{mappingPage}</strong> of <strong>{totalPages}</strong> (Showing {startIndex + 1}-{Math.min(filteredMappings.length, startIndex + itemsPerPage)} of {filteredMappings.length} facilities)
+                </span>
+                <button 
+                  disabled={mappingPage === totalPages} 
+                  onClick={() => setMappingPage(p => Math.min(totalPages, p + 1))}
+                  className="page-btn"
+                >
+                  Next
+                </button>
+              </div>
+            )}
           </div>
         )}
 

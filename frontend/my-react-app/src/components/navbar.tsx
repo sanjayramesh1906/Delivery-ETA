@@ -80,6 +80,16 @@ const AdminIcon: React.FC = () => (
   </svg>
 );
 
+const MappingIcon: React.FC = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M9 11V6m0 5v5m0-5h6m-6 0H3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+    <circle cx="9" cy="6" r="2" />
+    <circle cx="9" cy="16" r="2" />
+    <circle cx="17" cy="11" r="2" />
+    <circle cx="3" cy="11" r="2" />
+  </svg>
+);
+
 const UserIcon: React.FC = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
     <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2" />
@@ -89,9 +99,7 @@ const UserIcon: React.FC = () => (
 
 const LogOutIcon: React.FC = () => (
   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-    <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4" />
-    <polyline points="16 17 21 12 16 7" />
-    <line x1="21" x2="9" y1="12" y2="12" />
+    <path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67" />
   </svg>
 );
 
@@ -127,22 +135,22 @@ export interface NavbarProps {
   logoUrl?: string;
 }
 
-export const Navbar: React.FC<NavbarProps> = ({
-  activeTab = 'network-graph',
-  onTabChange,
-  onNewTripClick,
-  onSimulationRun,
-  userName = 'Operator Admin',
-  userEmail = 'operator@delhivery-eta.in',
-  avatarUrl = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&h=100&q=80',
-  logoUrl = '/logo.png',
-}) => {
+export const Navbar: React.FC<NavbarProps> = (props) => {
+  const {
+    activeTab = 'network-graph',
+    onTabChange,
+    userName = 'Operator Admin',
+    userEmail = 'operator@delhivery-eta.in',
+    avatarUrl = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=100&h=100&q=80',
+    logoUrl = '/logo.png',
+  } = props;
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState<boolean>(false);
   const [isProfileOpen, setIsProfileOpen] = useState<boolean>(false);
   const profileDropdownRef = useRef<HTMLDivElement>(null);
 
   const navigationItems: NavItem[] = [
     { id: 'network-graph', label: 'Network Graph', icon: <NetworkIcon /> },
+    { id: 'network-mapping', label: 'Network ID Mapping', icon: <MappingIcon /> },
     { id: 'bottleneck', label: 'Bottleneck Analysis', icon: <BottleneckIcon /> },
     { id: 'eta', label: 'ETA Prediction', icon: <EtaIcon /> },
     { id: 'corridor', label: 'Corridor Intelligence', icon: <CorridorIcon /> },
@@ -260,7 +268,7 @@ export const Navbar: React.FC<NavbarProps> = ({
                   onClick={(): void => handleProfileItemClick('logout')}
                 >
                   <LogOutIcon />
-                  Logout
+                  Reset Database
                 </button>
               </div>
             )}
@@ -324,7 +332,7 @@ export const Navbar: React.FC<NavbarProps> = ({
             }}
           >
             <LogOutIcon />
-            Logout
+            Reset Database
           </a>
         </div>
       </div>
